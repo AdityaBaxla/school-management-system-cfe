@@ -17,6 +17,14 @@ const {
   deleteFeeType,
 } = require("../../controllers/FeeTypeController");
 
+const {
+  createFeeStructure,
+  getAllFeeStructure,
+  deleteFeeStructure,
+  getFeeStructure,
+  updateFeeStructure,
+} = require("../../controllers/FeeStructureController");
+
 // Create a new student
 router.post("/students", async (req, res) => {
   try {
@@ -77,7 +85,7 @@ router.delete("/students/:id", async (req, res) => {
 
 // Fee Type
 
-router.post("/feetypes", async (req, res) => {
+router.post("/fee-types", async (req, res) => {
   try {
     const fee = await createFeeType({ ...req.body, ...req.query });
     res.status(201).json(fee);
@@ -86,7 +94,7 @@ router.post("/feetypes", async (req, res) => {
   }
 });
 
-router.get("/feetypes", async (req, res) => {
+router.get("/fee-types", async (req, res) => {
   try {
     const fees = await getAllFeeType({ ...req.query }); // spread queries like academicYearId
     res.status(200).json(fees);
@@ -95,7 +103,7 @@ router.get("/feetypes", async (req, res) => {
   }
 });
 
-router.get("/feetypes/:id", async (req, res) => {
+router.get("/fee-types/:id", async (req, res) => {
   const id = req.params.id;
   try {
     const fee = await getFeeType(id, { ...req.query });
@@ -105,7 +113,7 @@ router.get("/feetypes/:id", async (req, res) => {
   }
 });
 
-router.put("/feetypes/:id", async (req, res) => {
+router.put("/fee-types/:id", async (req, res) => {
   const id = req.params.id;
   try {
     console.log("here in update");
@@ -116,12 +124,69 @@ router.put("/feetypes/:id", async (req, res) => {
   }
 });
 
-router.delete("/feetypes/:id", async (req, res) => {
+router.delete("/fee-types/:id", async (req, res) => {
   try {
     await deleteFeeType(req.params.id, {
       ...res.query,
     });
     res.json({ message: "Feetype deleted successfully" });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Fee Structure
+
+router.post("/fee-structures", async (req, res) => {
+  try {
+    const feeStructure = await createFeeStructure({
+      ...req.body,
+      ...req.query,
+    });
+    res.status(201).json(feeStructure);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.get("/fee-structures", async (req, res) => {
+  try {
+    const feeStructure = await getAllFeeStructure({ ...req.query }); // spread queries like academicYearId
+    res.status(200).json(feeStructure);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/fee-structures/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const feeStructure = await getFeeStructure(id, { ...req.query });
+    res.status(200).json(feeStructure);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put("/fee-structures/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const feeStructure = await updateFeeStructure(id, {
+      ...req.query,
+      ...req.body,
+    });
+    res.json(feeStructure);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete("/fee-structures/:id", async (req, res) => {
+  try {
+    await deleteFeeStructure(req.params.id, {
+      ...res.query,
+    });
+    res.json({ message: "Fee Structure deleted successfully" });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

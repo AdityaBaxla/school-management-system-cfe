@@ -5,6 +5,8 @@ const {
   Configuration,
 } = require("../models");
 
+const { BILLING_CYCLES } = require("../utils/constants");
+
 const getDropdownLabels = async (data) => {
   switch (data.entity) {
     case "classSection": {
@@ -26,6 +28,21 @@ const getDropdownLabels = async (data) => {
   }
 };
 
+function listBillingCycles() {
+  // This function returns a list of billing cycles for the dropdown
+
+  return [
+    BILLING_CYCLES.map((cycle) => ({
+      id: cycle,
+      label: cycle
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),
+    })),
+  ];
+}
+
 module.exports = {
   getDropdownLabels,
+  listBillingCycles,
 };

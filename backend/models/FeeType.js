@@ -6,6 +6,7 @@ const FeeType = sequelize.define(
   "FeeType",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    code: { type: DataTypes.STRING, unique: true },
     name: { type: DataTypes.STRING, allowNull: true, unique: true },
     description: { type: DataTypes.TEXT, allowNull: true },
   }

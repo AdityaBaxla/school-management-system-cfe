@@ -11,6 +11,13 @@ const FeePayment = sequelize.define("FeePayment", {
   //   onUpdate: "CASCADE",
   //   onDelete: "CASCADE",
   // },
+  invoiceID: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: { model: "FeeInvoice", key: "id" },
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE",
+  },
   paymentDate: {
     type: DataTypes.DATEONLY,
     allowNull: true,
