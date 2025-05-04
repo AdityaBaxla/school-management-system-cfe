@@ -121,11 +121,10 @@ MIT License — feel free to use, modify, and deploy it responsibly.
 
 ## 📬 Contact
 
-* Developer: \[Aditya Baxla]
+* Developer: Aditya Baxla
 * Email: [adityabaxla@gmail.com](mailto:adityabaxla@gmail.com)
 * Twitter: [@BaxlaAditya](https://twitter.com/BaxlaAditya)
 * GitHub: [github.com/AdityaBaxla](https://github.com/adityabaxla)
-
 
 
 ### Name Suggestions
