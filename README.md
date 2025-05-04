@@ -92,6 +92,18 @@ The backend API will run on `http://localhost:3000`
 
 ---
 
+## 🧪 V1 Pre-deployment Checklist
+
+[ ] Can create + promote students
+
+[ ] Can define fees + concessions
+
+[ ] Can input monthly payments
+
+[ ] Can generate & view fee receipts
+
+[ ] Can run basic fee collection/due reports
+
 ## 🔄 Future Plan
 
 * 🟢 **Shift to hosted backend** using PostgreSQL

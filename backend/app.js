@@ -1,13 +1,15 @@
 const express = require("express");
 const cors = require("cors");
+const morgan = require("morgan");
 const app = express();
 
 const routes = require("./routes/crud/index");
 
 app.use(cors());
 app.use(express.json());
+app.use(morgan("dev"));
 
-app.use("/crud", routes);
+app.use("/api/crud", routes);
 // Routes
 // app.use("/api/students", require("./routes/students"));
 app.get("/", (req, res) => {

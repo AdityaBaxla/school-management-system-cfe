@@ -1,42 +1,12 @@
 // models/FeeStructure.js
-const { DataTypes: DFS } = require("sequelize");
+// this is a instance of fee type with the amount and due date set for each academic year
+const { DataTypes } = require("sequelize");
 const sequelize = require("../database");
-const ClassFS = require("./Class");
-const AcademicYearFS = require("./AcademicYear");
-const FeeTypeFS = require("./FeeType");
 
-const FeeStructure = sequelize.define(
-  "FeeStructure",
-  {
-    id: { type: DFS.INTEGER, primaryKey: true, autoIncrement: true },
-    // class_id: {
-    //   type: DFS.INTEGER,
-    //   allowNull: false,
-    //   references: { model: ClassFS, key: "id" },
-    //   onUpdate: "CASCADE",
-    //   onDelete: "RESTRICT",
-    // },
-    // academic_year_id: {
-    //   type: DFS.INTEGER,
-    //   allowNull: false,
-    //   references: { model: AcademicYearFS, key: "id" },
-    //   onUpdate: "CASCADE",
-    //   onDelete: "RESTRICT",
-    // },
-    // fee_type_id: {
-    //   type: DFS.INTEGER,
-    //   allowNull: false,
-    //   references: { model: FeeTypeFS, key: "id" },
-    //   onUpdate: "CASCADE",
-    //   onDelete: "RESTRICT",
-    // },
-    amount: { type: DFS.DECIMAL(10, 2), allowNull: false },
-    dueDate: { type: DFS.DATEONLY, allowNull: true },
-  }
-  // {
-  //   tableName: "fee_structure",
-  //   underscored: true,
-  // }
-);
+const FeeStructure = sequelize.define("FeeStructure", {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  amount: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+  dueDate: { type: DataTypes.DATEONLY, allowNull: true },
+});
 
 module.exports = FeeStructure;

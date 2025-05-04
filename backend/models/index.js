@@ -12,6 +12,7 @@ const FeeStructure = require("./FeeStructure");
 const FeeInvoice = require("./FeeInvoice");
 const FeePayment = require("./FeePayment");
 const Job = require("./Job");
+const Scholarship = require("./Scholarship");
 
 // === Associations ===
 
@@ -62,6 +63,12 @@ FeeInvoice.belongsTo(FeeStructure, { foreignKey: "feeStructureId" });
 FeeInvoice.hasMany(FeePayment, { foreignKey: "feeInvoiceId" });
 FeePayment.belongsTo(FeeInvoice, { foreignKey: "feeInvoiceId" });
 
+// Enrollment ↔ Scholarship (1-to-Many)
+Enrollment.hasMany(Scholarship, { foreignKey: "enrollmentId" });
+Scholarship.belongsTo(Enrollment, { foreignKey: "enrollmentId" });
+Scholarship.belongsTo(FeeStructure, { foreignKey: "feeStructureId" });
+FeeStructure.hasMany(Scholarship, { foreignKey: "feeStructureId" });
+
 // You can add Job associations here if it relates to any other models
 
 module.exports = {
@@ -77,4 +84,5 @@ module.exports = {
   FeeInvoice,
   FeePayment,
   Job,
+  Scholarship,
 };

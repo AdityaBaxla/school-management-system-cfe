@@ -20,7 +20,7 @@
 // }
 import fetchAPI from "../request/fetch";
 
-const BASE_URL = "http://localhost:3000/crud";
+const BASE_URL = "http://localhost:3000/api/crud";
 
 export default {
   student: {

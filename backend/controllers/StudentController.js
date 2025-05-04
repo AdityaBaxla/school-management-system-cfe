@@ -19,21 +19,18 @@ async function createStudent(data) {
 
 // Get all students
 async function getAllStudents(academicYearId) {
-  console.log("academicYearId", academicYearId);
   // If no academic year ID is provided, use the current academic year
   if (!academicYearId) {
     academicYearId = await Configuration.findByPk("CURRENT_AY").value;
   }
 
   // wrong logic, the class section should be filtered by academic year
-  console.log("academicYearId", academicYearId);
   const students = await Student.findAll({
     include: {
       model: Enrollment,
       include: ClassSection,
     },
   });
-  console.log("students", students);
 
   return students.map((s) => ({
     id: s.id,

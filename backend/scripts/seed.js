@@ -87,6 +87,46 @@ async function seed() {
       classSectionId: classSection2.id,
       academicYearId: ay.id,
     });
+
+    const feeType1 = await FeeType.create({
+      name: "Tuition Fee",
+      description: "Monthly tuition fee for the student",
+    });
+
+    const feeType2 = await FeeType.create({
+      name: "Late Fine",
+      description: "Fine for late payment of fees",
+    });
+
+    const feeType3 = await FeeType.create({
+      name: "Admission Fee",
+      description: "One-time admission fee",
+    });
+
+    const feeType4 = await FeeType.create({
+      name: "Annual Fee",
+      description: "Annual fee for the student",
+    });
+
+    const feeType5 = await FeeType.create({
+      name: "Examination Fee",
+      description: "Fee for the examination",
+    });
+
+    const feeType6 = await FeeType.create({
+      name: "Library Fee/Lab Charge",
+      description: "Fee for library/lab usage",
+    });
+
+    const feeType7 = await FeeType.create({
+      name: "Infrastructure Maintenance",
+      description: "Fee for infrastructure maintenance",
+    });
+    const feeType8 = await FeeType.create({
+      name: "Co-curricular Activities",
+      description: "Fee for co-curricular activities",
+    });
+
     // await FeeStructure.bulkCreate([
     //   {
     //     class_id: grade1.id,
