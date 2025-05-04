@@ -1,5 +1,5 @@
-const sequelize = require("../sequelize");
 const { DataTypes } = require("sequelize");
+const sequelize = require("../database");
 
 const ClassSection = sequelize.define("ClassSection", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },

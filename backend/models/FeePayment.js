@@ -1,8 +1,8 @@
 // models/FeePayment.js
 const { DataTypes: DataTypes } = require("sequelize");
-const seqFP = require("../sequelize");
+const sequelize = require("../database");
 
-const FeePayment = seqFP.define("FeePayment", {
+const FeePayment = sequelize.define("FeePayment", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   // fee_invoice_id: {
   //   type: DataTypes.INTEGER,

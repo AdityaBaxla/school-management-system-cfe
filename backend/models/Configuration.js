@@ -1,6 +1,6 @@
 // models/Configuration.js
 const { DataTypes } = require("sequelize");
-const sequelize = require("../sequelize");
+const sequelize = require("../database");
 
 const Configuration = sequelize.define("Configuration", {
   key: {

@@ -1,8 +1,8 @@
 // models/FeeType.js
 const { DataTypes: DFT } = require("sequelize");
-const seqFT = require("../sequelize");
+const sequelize = require("../database");
 
-const FeeType = seqFT.define(
+const FeeType = sequelize.define(
   "FeeType",
   {
     id: { type: DFT.INTEGER, primaryKey: true, autoIncrement: true },

@@ -1,6 +1,6 @@
 // models/FeeInvoice.js
 const { DataTypes } = require("sequelize");
-const sequelize = require("../sequelize");
+const sequelize = require("../database");
 
 const FeeInvoice = sequelize.define(
   "FeeInvoice",

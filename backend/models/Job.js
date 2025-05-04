@@ -1,6 +1,6 @@
 // model for storing information about jobs like generating fee invoices, sending emails, etc.
-const sequelize = require("../sequelize");
 const { DataTypes } = require("sequelize");
+const sequelize = require("../database");
 
 const Job = sequelize.define("Job", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },

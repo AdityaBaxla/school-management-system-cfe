@@ -1,6 +1,6 @@
 // models/Enrollment.js
 const { DataTypes: DataTypes } = require("sequelize");
-const sequelize = require("../sequelize");
+const sequelize = require("../database");
 
 const Enrollment = sequelize.define(
   "Enrollment",

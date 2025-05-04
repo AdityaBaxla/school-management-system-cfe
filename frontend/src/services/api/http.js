@@ -18,4 +18,28 @@
 //     // …etc…
 //   }
 // }
-export default {}
+import fetchAPI from "../request/fetch";
+
+const BASE_URL = "http://localhost:3000/crud";
+
+export default {
+  student: {
+    getAll: () => fetchAPI(`${BASE_URL}/students`),
+    create: (data) =>
+      fetchAPI(`${BASE_URL}/students`, { method: "POST", body: data }),
+    update: (id, data) =>
+      fetchAPI(`${BASE_URL}/students/${id}`, { method: "PUT", body: data }),
+    delete: (id) =>
+      fetchAPI(`${BASE_URL}/students/${id}`, { method: "DELETE" }),
+  },
+  fee: {
+    getAll: () => fetchAPI(`${BASE_URL}/fees`),
+    create: (data) =>
+      fetchAPI(`${BASE_URL}/fees`, { method: "POST", body: data }),
+    update: (id, data) =>
+      fetchAPI(`${BASE_URL}/fees/${id}`, { method: "PUT", body: data }),
+    delete: (id) => fetchAPI(`${BASE_URL}/fees/${id}`, { method: "DELETE" }),
+  },
+  getDropdownLabels: (entity) =>
+    fetchAPI(`${BASE_URL}/dropdown`, { method: "POST", body: entity }),
+};

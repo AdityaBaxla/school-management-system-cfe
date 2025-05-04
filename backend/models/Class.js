@@ -1,6 +1,6 @@
 // a generic model which will be used to create a class-section table every academic year
 const { DataTypes: DataTypes } = require("sequelize");
-const sequelize = require("../sequelize");
+const sequelize = require("../database");
 
 const Class = sequelize.define(
   "Class",

@@ -1,6 +1,6 @@
 // models/AcademicYear.js
 const { DataTypes } = require("sequelize");
-const sequelize = require("../sequelize");
+const sequelize = require("../database");
 
 const AcademicYear = sequelize.define(
   "AcademicYear",

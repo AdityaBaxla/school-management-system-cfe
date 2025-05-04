@@ -1,11 +1,11 @@
 // models/FeeStructure.js
 const { DataTypes: DFS } = require("sequelize");
-const seqFS = require("../sequelize");
+const sequelize = require("../database");
 const ClassFS = require("./Class");
 const AcademicYearFS = require("./AcademicYear");
 const FeeTypeFS = require("./FeeType");
 
-const FeeStructure = seqFS.define(
+const FeeStructure = sequelize.define(
   "FeeStructure",
   {
     id: { type: DFS.INTEGER, primaryKey: true, autoIncrement: true },

@@ -11,11 +11,9 @@ const {
   FeeInvoice,
   FeePayment,
   ClassSection,
-} = require("../database/models");
+} = require("../models");
 
-const {
-  createClassSection,
-} = require("../database/controllers/ClassController");
+const { createClassSection } = require("../controllers/ClassController");
 
 async function seed() {
   try {

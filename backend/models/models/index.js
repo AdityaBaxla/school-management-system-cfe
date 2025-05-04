@@ -1,7 +1,7 @@
 // models/index.js
-const sequelize = require("../sequelize");
+const sequelize = require("../../database");
 
-const Student = require("./Student");
+const Student = require("../Student");
 const Class = require("./Class");
 const ClassSection = require("./ClassSection");
 const AcademicYear = require("./AcademicYear");
@@ -11,7 +11,7 @@ const FeeType = require("./FeeType");
 const FeeStructure = require("./FeeStructure");
 const FeeInvoice = require("./FeeInvoice");
 const FeePayment = require("./FeePayment");
-const Job = require("./Job");
+const Job = require("../Job");
 
 // === Associations ===
 
