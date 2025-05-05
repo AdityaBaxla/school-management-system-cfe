@@ -17,4 +17,15 @@ app.get("/", (req, res) => {
 });
 // Add more routes as needed
 
-module.exports = app;
+// other app.use() and routes above...
+app.use((err, req, res, next) => {
+  console.error("🔥 Global Error:", err); // Optional for debugging
+
+  const status = err.status || 500;
+  res.status(status).json({
+    error: err.message,
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+  });
+});
+
+module.exports = app; // for testing and exposing to tests

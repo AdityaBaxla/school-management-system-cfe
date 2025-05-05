@@ -4,11 +4,12 @@ const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
 const databaseUrl = process.env.DATABASE_URL;
+console.log("Database URL:", databaseUrl);
 
 const sequelize = new Sequelize(databaseUrl, {
   logging: false, // Disable SQL logs in console
   dialectOptions:
-    process.env.NODE_ENV === "production"
+    process.env.NODE_ENV === "production" || process.env.NODE_ENV === "test"
       ? {}
       : {
           // SQLite specific options

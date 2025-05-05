@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const asyncHandler = require("../utils/asyncHandler");
 
 const {
   createStudent,
@@ -24,6 +25,8 @@ const {
   getFeeStructure,
   updateFeeStructure,
 } = require("../../controllers/FeeStructureController");
+
+const academicYearController = require("../../controllers/academicYearController");
 
 // Create a new student
 router.post("/students", async (req, res) => {
@@ -191,5 +194,27 @@ router.delete("/fee-structures/:id", async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
+// academic year crud routes
+router.get(
+  "/academic-years",
+  asyncHandler(academicYearController.getAllAcademicYears)
+);
+router.get(
+  "/academic-years/:id",
+  asyncHandler(academicYearController.getAcademicYear)
+);
+router.post(
+  "/academic-years",
+  asyncHandler(academicYearController.createAcademicYear)
+);
+router.put(
+  "/academic-years/:id",
+  asyncHandler(academicYearController.updateAcademicYear)
+);
+router.delete(
+  "/academic-years/:id",
+  asyncHandler(academicYearController.deleteAcademicYear)
+);
 
 module.exports = router;

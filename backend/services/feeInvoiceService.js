@@ -4,14 +4,14 @@ const {
   Enrollment,
   FeePayment,
 } = require("../models");
-
+const { BILLING_CYCLES } = require("../utils/constants");
 const { Op } = require("sequelize");
 
 // 🔁 1. Generate monthly invoices for all enrollments
 async function generateMonthlyInvoices({ academicYearId, month, year }) {
   const period = `${month.toUpperCase()}-${year}`;
   const feeStructures = await FeeStructure.findAll({
-    where: { academicYearId, billingCycle: "monthly" },
+    where: { academicYearId, billingCycle: "MONTHLY" },
   });
 
   const enrollments = await Enrollment.findAll({ where: { academicYearId } });
