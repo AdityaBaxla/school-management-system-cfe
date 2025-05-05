@@ -135,22 +135,24 @@ async function seed() {
       code: "CO_CURR_ACT",
     });
 
-    // await FeeStructure.bulkCreate([
-    //   {
-    //     class_id: grade1.id,
-    //     academic_year_id: ay.id,
-    //     fee_type_id: tuition.id,
-    //     amount: 1000,
-    //     dueDate: "2024-07-15",
-    //   },
-    //   {
-    //     class_id: grade1.id,
-    //     academic_year_id: ay.id,
-    //     fee_type_id: activity.id,
-    //     amount: 200,
-    //     dueDate: "2024-07-15",
-    //   },
-    // ]);
+    await FeeStructure.bulkCreate([
+      {
+        classId: class1.id,
+        academicYearId: ay.id,
+        feeTypeId: feeType1.id,
+        amount: 1000,
+        billingCycle: "MONTHLY",
+        dueDate: "2024-07-15",
+      },
+      {
+        classId: class1.id,
+        academicYearId: ay.id,
+        feeTypeId: feeType2.id,
+        amount: 200,
+        dueDate: "2024-07-15",
+        billingCycle: "MONTHLY",
+      },
+    ]);
 
     // 3) Create a student & enrollment
 

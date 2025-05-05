@@ -217,4 +217,12 @@ router.delete(
   asyncHandler(academicYearController.deleteAcademicYear)
 );
 
+const feeInvoiceController = require("../../controllers/fee-invoice-controller");
+
+// Fee Invoice generation
+router.post(
+  "/fee-invoices/generate-monthly",
+  asyncHandler(feeInvoiceController.generateMonthlyFeeInvoices)
+);
+
 module.exports = router;

@@ -2,40 +2,63 @@ const {
   FeeInvoice,
   FeeStructure,
   Enrollment,
+  ClassSection,
+  Class,
   FeePayment,
 } = require("../models");
-const { BILLING_CYCLES } = require("../utils/constants");
+// const { BILLING_CYCLES } = require("../utils/constants");
 const { Op } = require("sequelize");
 
 // 🔁 1. Generate monthly invoices for all enrollments
 async function generateMonthlyInvoices({ academicYearId, month, year }) {
+  console.log("running generateMonthlyInvoices");
+
   const period = `${month.toUpperCase()}-${year}`;
   const feeStructures = await FeeStructure.findAll({
     where: { academicYearId, billingCycle: "MONTHLY" },
   });
 
-  const enrollments = await Enrollment.findAll({ where: { academicYearId } });
+  const enrollments = await Enrollment.findAll({
+    where: { academicYearId },
+    include: [
+      {
+        model: ClassSection,
+        include: [
+          {
+            model: Class,
+            attributes: ["id", "name"], // or just ['id'] if only classId needed
+          },
+        ],
+        attributes: ["id", "classId"],
+      },
+    ],
+    raw: true,
+    nest: true,
+  });
 
   const invoices = [];
 
   for (const enrollment of enrollments) {
+    console.log("enrollments:", enrollment);
     for (const fee of feeStructures) {
-      if (fee.classSectionId !== enrollment.classSectionId) continue;
+      // console.log("fee:", fee.dataValues);
+      // Check if the fee is applicable for the student's class section, since each class has a different fee structure
+      console.log(enrollment.ClassSection?.classId, fee.classId);
+      if (fee.classId !== enrollment.ClassSection?.classId) continue;
 
       const alreadyExists = await FeeInvoice.findOne({
         where: {
           studentId: enrollment.studentId,
-          feeTypeId: fee.feeTypeId,
+          feeStructureId: fee.id,
           period,
-          academicYearId,
         },
       });
 
       if (!alreadyExists) {
         invoices.push({
           studentId: enrollment.studentId,
-          feeTypeId: fee.feeTypeId,
-          academicYearId,
+          enrollmentId: enrollment.id,
+          feeStructureId: fee.id,
           period,
           originalAmount: fee.amount,
           finalAmount: fee.amount,
@@ -49,7 +72,7 @@ async function generateMonthlyInvoices({ academicYearId, month, year }) {
     await FeeInvoice.bulkCreate(invoices);
   }
 
-  return invoices.length;
+  return { numberOfInvoices: invoices.length, period: period };
 }
 
 // 🧾 2. Generate annual invoice once per student

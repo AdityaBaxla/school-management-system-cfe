@@ -10,7 +10,9 @@ const FeeStructure = sequelize.define("FeeStructure", {
   code: { type: DataTypes.STRING, allowNull: true },
   displayName: { type: DataTypes.STRING },
   amount: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
-  dueDate: { type: DataTypes.DATEONLY, allowNull: true },
+  dueDate: { type: DataTypes.DATEONLY, allowNull: true }, // for one time fees
+  dueDateMonthly: { type: DataTypes.DATEONLY, allowNull: true }, // for monthly fees
+  lateFine: { type: DataTypes.FLOAT(10, 2), allowNull: true },
   billingCycle: {
     type: DataTypes.ENUM(...BILLING_CYCLES),
     allowNull: false,
