@@ -4,7 +4,7 @@
       :items="students"
       :columns="displayFields"
       :showInputRow="true"
-      title="Students"
+      title="Manage Students"
       @item-create="createStudent"
       @row-edit-save="editStudent"
       :loading="loading"
@@ -26,16 +26,19 @@ const creating = ref(false);
 const newStudent = ref({ firstName: "", age: null, roll_no: null, class: "" });
 
 const displayFields = ref([
-  { header: "ID", field: "id", editable: false },
+  { header: "ID", field: "id", editable: false, width: "3%" },
   // { header: "Name", field: "name" },
-  { header: "First Name", field: "firstName" },
-  { header: "Last Name", field: "lastName" },
-  { header: "Admission #", field: "admissionNumber" },
+  { header: "First Name", field: "firstName", width: "20%" },
+  // { header: "Middle Name", field: "middleName" },
+  // { header: "Age", field: "age" },
+  { header: "Last Name", field: "lastName", width: "20%" },
+  { header: "Admission #", field: "admissionNumber", width: "20%" },
   {
     header: "Class Section",
     field: "classSectionId",
     type: "dropdown",
     options: [],
+    width: "20%",
   },
 
   // { header: "Adhaar No.", field: "adhaarNo" },

@@ -46,6 +46,7 @@
         editMode="row"
         dataKey="id"
         v-model:editingRows="editingRows"
+        v-model:selection="selectedProducts"
         @row-edit-save="onRowEditSave"
         @row-edit-init="onRowEditInit"
         @row-edit-cancel="onRowEditCancel"
@@ -55,12 +56,47 @@
         removableSort
         :rowHover="true"
         responsiveLayout="scroll"
+        filterDisplay="menu"
+        :global-filter-fields="normalizedColumns.map((col) => col.field)"
+        :pt="{
+          table: { style: 'min-width: 50rem' },
+          column: {
+            bodycell: ({ state }) => ({
+              style:
+                state['d_editing'] &&
+                'padding-top: 0.75rem; padding-bottom: 0.75rem',
+            }),
+          },
+        }"
       >
+        <!-- for search -->
+        <template #header>
+          <div class="flex flex-wrap gap-2 items-center justify-between">
+            <h4 class="m-0">{{ props.title }}</h4>
+            <IconField>
+              <InputIcon>
+                <i class="pi pi-search" />
+              </InputIcon>
+              <InputText
+                v-model="filters['global'].value"
+                placeholder="Search..."
+              />
+            </IconField>
+          </div>
+        </template>
+        <!-- search end -->
+        <!-- selection box -->
+        <Column
+          selectionMode="multiple"
+          style="width: 3rem"
+          :exportable="false"
+        ></Column>
+
         <template v-for="col in normalizedColumns" :key="col.field">
           <Column
             :field="col.field"
             :header="col.header"
-            :style="{ width: col.width || 'auto' }"
+            :style="{ width: col.width || '17%' }"
             :editable="col.editable !== false"
           >
             <!-- Create Form Template -->
@@ -77,7 +113,7 @@
                   placeholder="Select"
                   class="w-full p-inputtext-sm"
                   @keydown.tab="focusNextInput($event, col.field)"
-                  ref="inputRefs"
+                  :ref="inputRefs"
                 />
                 <InputNumber
                   v-else-if="col.type === 'number'"
@@ -85,7 +121,7 @@
                   class="w-full p-inputtext-sm"
                   @keydown.enter="createItem"
                   @keydown.tab="focusNextInput($event, col.field)"
-                  ref="inputRefs"
+                  :ref="inputRefs"
                 />
                 <InputText
                   v-else
@@ -93,7 +129,7 @@
                   class="w-full p-inputtext-sm"
                   @keydown.enter="createItem"
                   @keydown.tab="focusNextInput($event, col.field)"
-                  ref="inputRefs"
+                  :ref="inputRefs"
                 />
               </div>
 
@@ -209,6 +245,35 @@
         />
       </template>
     </Dialog>
+
+    <!-- delete multiple items dialog -->
+    <Dialog
+      v-model:visible="deleteProductsDialog"
+      :style="{ width: '450px' }"
+      header="Confirm"
+      :modal="true"
+    >
+      <div class="flex items-center gap-4">
+        <i class="pi pi-exclamation-triangle !text-3xl" />
+        <span v-if="product"
+          >Are you sure you want to delete the selected products?</span
+        >
+      </div>
+      <template #footer>
+        <Button
+          label="No"
+          icon="pi pi-times"
+          text
+          @click="deleteProductsDialog = false"
+        />
+        <Button
+          label="Yes"
+          icon="pi pi-check"
+          text
+          @click="deleteSelectedProducts"
+        />
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -220,9 +285,21 @@ import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import { InputNumber, Toolbar, FileUpload } from "primevue";
+import {
+  InputNumber,
+  Toolbar,
+  FileUpload,
+  InputIcon,
+  IconField,
+} from "primevue";
+import { FilterMatchMode } from "@primevue/core/api";
+import { useToast } from "primevue/usetoast";
 
 const props = defineProps({
+  title: {
+    type: String,
+    default: "Data Table",
+  },
   items: {
     type: Array,
     default: () => [],
@@ -237,7 +314,13 @@ const emit = defineEmits(["row-edit-save", "item-create", "item-delete"]);
 const dataTable = ref(null);
 const inputRefs = ref([]);
 const editData = ref({});
+const selectedProducts = ref(null);
+const deleteProductsDialog = ref(false);
 
+// for filter (likely redundant)
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 // Create mode state
 const createMode = ref(false);
 
@@ -432,17 +515,18 @@ const focusNextInput = (event, currentField) => {
 
 // Create new item
 const createItem = () => {
-  // Create a copy of the current data to avoid reference issues
   const newItem = { ...newItemData.value };
-
-  // Remove the temporary ID
   delete newItem.id;
-
-  // Emit event with the new item
   emit("item-create", newItem);
+  createMode.value = true;
 
-  // Optionally turn off create mode
-  createMode.value = false;
+  // Wait for DOM to update, then focus
+  nextTick(() => {
+    // inputRefs.value = []; // reset refs before DOM refills it
+    nextTick(() => {
+      inputRefs.value[0]?.focus();
+    });
+  });
 };
 
 // Confirm delete functions
@@ -467,9 +551,29 @@ const deleteItem = () => {
     itemToDelete.value = null;
   }
 };
+
+const exportCSV = () => {
+  dataTable.value.exportCSV();
+};
+const confirmDeleteSelected = () => {
+  deleteProductsDialog.value = true;
+};
+const deleteSelectedProducts = () => {
+  products.value = products.value.filter(
+    (val) => !selectedProducts.value.includes(val)
+  );
+  deleteProductsDialog.value = false;
+  selectedProducts.value = null;
+  toast.add({
+    severity: "success",
+    summary: "Successful",
+    detail: "Products Deleted",
+    life: 3000,
+  });
+};
 </script>
 
-<style scoped>
+<!-- <style scoped>
 /* Ensure consistent sizing for all form elements */
 :deep(.p-inputtext),
 :deep(.p-dropdown),
@@ -507,4 +611,4 @@ const deleteItem = () => {
 :deep(.p-cell-editing .p-component) {
   width: 100%;
 }
-</style>
+</style> -->
