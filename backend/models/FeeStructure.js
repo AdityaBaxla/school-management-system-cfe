@@ -14,7 +14,7 @@ const FeeStructure = sequelize.define("FeeStructure", {
   dueDateMonthly: { type: DataTypes.DATEONLY, allowNull: true }, // for monthly fees
   lateFine: { type: DataTypes.FLOAT(10, 2), allowNull: true },
   billingCycle: {
-    type: DataTypes.ENUM(...BILLING_CYCLES),
+    type: DataTypes.ENUM(...Object.values(BILLING_CYCLES)),
     allowNull: false,
   },
 });

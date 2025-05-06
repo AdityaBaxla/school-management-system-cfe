@@ -5,6 +5,8 @@ const app = express();
 
 const routes = require("./routes/crud/index");
 
+require("module-alias/register");
+
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));

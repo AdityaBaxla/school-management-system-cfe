@@ -225,4 +225,8 @@ router.post(
   asyncHandler(feeInvoiceController.generateMonthlyFeeInvoices)
 );
 
+router.post(
+  "/fee-invoices/generate-annual",
+  asyncHandler(feeInvoiceController.generateAnnualFeeInvoices)
+);
 module.exports = router;

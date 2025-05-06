@@ -1,3 +1,6 @@
+// too much looping i understand, good enough for < 500 enrollments (current student count) > 5000 its risky.
+// ideas at the end of the file
+
 const {
   FeeInvoice,
   FeeStructure,
@@ -5,7 +8,10 @@ const {
   ClassSection,
   Class,
   FeePayment,
+  Job,
 } = require("../models");
+
+const { MONTHS, BILLING_CYCLES } = require("../models/utils/constants");
 // const { BILLING_CYCLES } = require("../utils/constants");
 const { Op } = require("sequelize");
 
@@ -72,38 +78,61 @@ async function generateMonthlyInvoices({ academicYearId, month, year }) {
     await FeeInvoice.bulkCreate(invoices);
   }
 
+  // add to job table to keep track of invoice generation
+  await Job.create({
+    name: "MONTHLY_INVOICE,",
+    status: "completed",
+    code: `${academicYearId}-${month}-${year}`,
+    data: invoices,
+  });
+
   return { numberOfInvoices: invoices.length, period: period };
 }
 
 // 🧾 2. Generate annual invoice once per student
-async function generateAnnualInvoices({ academicYearId }) {
+async function generateAnnualInvoices({ academicYearId, month = "APR" }) {
+  // generate annual invoices for all enrollments, billed at a particular month (usually April)
   const feeStructures = await FeeStructure.findAll({
-    where: { academicYearId, billingCycle: "annual" },
+    where: { academicYearId, billingCycle: BILLING_CYCLES.ANNUAL },
   });
 
-  const enrollments = await Enrollment.findAll({ where: { academicYearId } });
+  const enrollments = await Enrollment.findAll({
+    where: { academicYearId },
+    include: [
+      {
+        model: ClassSection,
+        include: [
+          {
+            model: Class,
+            attributes: ["id", "name"], // or just ['id'] if only classId needed
+          },
+        ],
+        attributes: ["id", "classId"],
+      },
+    ],
+    raw: true,
+    nest: true,
+  });
 
   const invoices = [];
 
   for (const enrollment of enrollments) {
     for (const fee of feeStructures) {
-      if (fee.classSectionId !== enrollment.classSectionId) continue;
+      if (fee.classId !== enrollment.ClassSection?.classId) continue;
 
       const alreadyExists = await FeeInvoice.findOne({
         where: {
           studentId: enrollment.studentId,
-          feeTypeId: fee.feeTypeId,
-          period: `ANNUAL-${academicYearId}`,
-          academicYearId,
+          feeStructureId: fee.id,
+          period: `${BILLING_CYCLES.ANNUAL}-${academicYearId}-${month}`,
         },
       });
 
       if (!alreadyExists) {
         invoices.push({
           studentId: enrollment.studentId,
-          feeTypeId: fee.feeTypeId,
-          academicYearId,
-          period: `ANNUAL-${academicYearId}`,
+          feeStructureId: fee.id,
+          period: `${BILLING_CYCLES.ANNUAL}-${academicYearId}-${month}`,
           originalAmount: fee.amount,
           finalAmount: fee.amount,
           status: "Unpaid",
@@ -116,21 +145,22 @@ async function generateAnnualInvoices({ academicYearId }) {
     await FeeInvoice.bulkCreate(invoices);
   }
 
+  // save the job to the database
+  await Job.create({
+    name: "ANNUAL_INVOICE",
+    status: "completed",
+    code: `${academicYearId}-${month}-${BILLING_CYCLES.ANNUAL}-${month}`,
+    data: invoices,
+  });
+
   return invoices.length;
 }
 
 // ➕ 3. Create ad-hoc invoice
-async function createAdHocInvoice({
-  studentId,
-  feeTypeId,
-  amount,
-  period,
-  academicYearId,
-}) {
+async function createAdHocInvoice({ enrollmentId, amount, period }) {
   return await FeeInvoice.create({
-    studentId,
-    feeTypeId,
-    academicYearId,
+    enrollmentId,
+    feeStructureId,
     period,
     originalAmount: amount,
     finalAmount: amount,
@@ -196,3 +226,36 @@ module.exports = {
   getStudentDues,
   updateInvoiceStatus,
 };
+
+/*
+  ⚠️ Performance Notes for Large-Scale Invoice Generation:
+
+  1. 🔄 Avoid N+1 Queries:
+     - Currently, `FeeInvoice.findOne()` is called inside nested loops.
+     - When enrollment count scales, this results in thousands of queries.
+     - ✅ Optimization: Preload all existing FeeInvoices for the target period and use a Set for fast lookup.
+
+  2. 🎯 Reduce Unnecessary Fee Checks:
+     - Currently iterating over all fee structures for every enrollment.
+     - ✅ Optimization: Group FeeStructures by classId ahead of time (Map<classId, FeeStructure[]>), and only loop over relevant ones per enrollment.
+
+  3. 🚀 Batch Processing:
+     - Invoice generation should ideally run as a background job, especially when system is under load.
+     - ✅ Use queue systems like BullMQ, Agenda, or even simple cron with async batching.
+
+  4. 📥 Bulk Insert Efficiently:
+     - You're already using `bulkCreate()` — keep that.
+     - ✅ Ensure indexes on studentId, feeStructureId, period in FeeInvoice table for fast upserts/checks.
+
+  5. 🧪 Test Scenarios:
+     - Benchmark generation time on test data with 5k+ enrollments.
+     - Use fake data seeding scripts to validate performance.
+
+  6. 📊 Track Job Stats:
+     - Extend `Job` table with start/end timestamps and duration.
+     - Helpful for monitoring job performance over time.
+
+  7. 🧹 Future Consideration:
+     - Consider denormalizing some fields only if necessary (e.g., storing classId on FeeInvoice) — but only after you’ve exhausted query optimizations.
+
+*/
